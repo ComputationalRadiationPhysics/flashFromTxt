@@ -1,7 +1,7 @@
 Conversion tool to generate FLASH initial state from FLASH outputs and openpmd_files
 =====================================================================================
 
-FLASH => FLASH
+FLASH => FLASH  
 PIConGPU  => FLASH
 
 ## QuickStart
