@@ -1,0 +1,233 @@
+run_comment = "Implementation Test for openpmd to flash"
+log_file    = "implement_test.log"
+basenm      = "implement_test_"
+
+# This particular parfile is used as an example that is described in
+# detail in the users guide.
+
+##########################
+#                        #
+#     I/O PARAMETERS     #
+#                        #
+##########################
+
+### Checkpoint Options  ###
+checkpointFileIntervalTime = 1.0
+checkpointFileIntervalStep = 10000
+
+### Plot Options ###
+plotFileNumber       = 0
+plotFileIntervalStep = 1000
+plotFileIntervalTime = 1000e-15
+plot_var_1           = "dens" 
+plot_var_2           = "depo" 
+plot_var_3           = "tele" 
+plot_var_4           = "tion" 
+plot_var_5           = "trad" 
+plot_var_6           = "ye  " 
+plot_var_7           = "sumy" 
+plot_var_8           = "cham" 
+plot_var_9           = "targ" 
+plot_var_10          = "pres" 
+plot_var_11          = "bdry"
+
+### Restart Options ###
+restart              = .false.
+checkpointFileNumber = 0
+plotFileNumber       = 0
+
+########################################
+#                                      #
+#     RADIATION/OPACITY PARAMETERS     #
+#                                      #
+########################################
+rt_useMGD       = .false.
+rt_mgdNumGroups = 1
+rt_mgdBounds_1  = 1.0e-02
+rt_mgdBounds_2  = 1.0e+10
+rt_mgdFlMode    = "fl_harmonic"
+rt_mgdFlCoef    = 1.0
+
+rt_mgdXlBoundaryType = "vacuum"
+rt_mgdXrBoundaryType = "vacuum"
+rt_mgdYlBoundaryType = "vacuum"
+rt_mgdYrBoundaryType = "vacuum"
+rt_mgdZlBoundaryType = "reflecting" 
+rt_mgdZrBoundaryType = "reflecting" 
+
+useOpacity     = .false.
+
+### SET CHAMBER (HELIUM) OPACITY OPTIONS ###
+op_chamAbsorb   = "op_tabpa"
+op_chamEmiss    = "op_tabpe"
+op_chamTrans    = "op_tabro"
+op_chamFileType = "ionmix4"
+op_chamFileName = "H_long.cn4"
+
+### SET TARGET (ALUMINUM) OPACITY OPTIONS ###
+op_targAbsorb   = "op_tabpa"
+op_targEmiss    = "op_tabpe"
+op_targTrans    = "op_tabro"
+op_targFileType = "ionmix4"
+op_targFileName = "H_long.cn4"
+
+
+#################################
+#                               #
+#     CONDUCTION PARAMETERS     #
+#                               #
+#################################
+useDiffuse      = .true.
+useConductivity = .true.
+diff_useEleCond = .true.
+diff_eleFlMode  = "fl_larsen"
+diff_eleFlCoef  = 0.06
+diff_thetaImplct = 1.0
+
+diff_eleXlBoundaryType = "outflow"
+diff_eleXrBoundaryType = "outflow"
+diff_eleYlBoundaryType = "outflow"
+diff_eleYrBoundaryType = "outflow"
+diff_eleZlBoundaryType = "outflow"
+diff_eleZrBoundaryType = "outflow"
+
+
+####################################
+#                                  #
+#     HEAT EXCHANGE PARAMETERS     #
+#                                  #
+####################################
+useHeatexchange = .true.
+
+
+##########################
+#                        #
+#     EOS PARAMETERS     #
+#                        #
+##########################
+eosModeInit      = "dens_temp_gather"
+smallt           = 1.0
+smallx           = 1.0e-99
+eos_useLogTables = .false.
+
+
+############################
+#                          #
+#     HYDRO PARAMETERS     #
+#                          #
+############################
+useHydro = .true.
+ 
+order            = 3        # Interpolation order (first/second/third/fifth order)
+slopeLimiter     = "minmod" # Slope limiters (minmod, mc, vanLeer, hybrid, limited)
+LimitedSlopeBeta = 1.       # Slope parameter for the "limited" slope by Toro
+charLimiting     = .true.   # Characteristic limiting vs. Primitive limiting
+use_avisc        = .true.   # use artificial viscosity (originally for PPM)
+cvisc            = 0.1      # coefficient for artificial viscosity
+use_flattening   = .false.  # use flattening (dissipative) (originally for PPM)
+use_steepening   = .false.  # use contact steepening (originally for PPM)
+use_upwindTVD    = .false.  # use upwind biased TVD slope for PPM (need nguard=6)
+RiemannSolver    = "hllc"   # Roe, HLL, HLLC, LLF, Marquina, hybrid
+entropy          = .false.  # Entropy fix for the Roe solver
+shockDetect      = .false.  # Shock Detect for numerical stability
+use_hybridOrder  = .true.   # Enforce Riemann density jump
+
+# Hydro boundary conditions:
+xl_boundary_type = "outflow"
+xr_boundary_type = "outflow"
+yl_boundary_type = "outflow"
+yr_boundary_type = "outflow"
+zl_boundary_type = "reflect" 
+zr_boundary_type = "reflect" 
+
+
+##############################
+#                            #
+#     INITIAL CONDITIONS     #
+#                            #
+##############################
+
+sim_targetRadius = 10.0e-04
+
+# Target material defaults set for H at Cryo temperature:
+sim_rhoTarg       = 0.087
+sim_teleTarg      = 400
+sim_tionTarg      = 400
+sim_tradTarg      = 400
+ms_targA          = 1.00784
+ms_targZ          = 1.0
+ms_targZMin       = 0.02
+eos_targEosType   = "eos_tab"
+eos_targSubType   = "ionmix4"
+eos_targTableFile = "H_long.cn4"
+
+# Chamber material defaults set for Helium at pressure 1.6 mbar:
+sim_rhoCham       = 1.0e-06
+sim_teleCham      = 400
+sim_tionCham      = 400
+sim_tradCham      = 400
+ms_chamA          = 1.00784
+ms_chamZ          = 1.0
+eos_chamEosType   = "eos_tab"
+eos_chamSubType   = "ionmix4"
+eos_chamTableFile = "H_long.cn4"
+
+# Target heated up in skin layer
+
+sim_heatDepth     = 1.0e-04
+sim_heatRadius    = 5.0e-04
+sim_heatTemp      = 800 
+
+###########################
+#                         #
+#     TIME PARAMETERS     #
+#                         #
+###########################
+tstep_change_factor = 1.10
+cfl            = 0.4
+dt_diff_factor = 1.0e+100 # Disable diffusion dt
+rt_dtFactor    = 0.2
+hx_dtFactor    = 1.0e+100
+tmax           = 100.0e-12
+dtmin          = 1.0e-17
+dtinit         = 1.0e-16
+dtmax          = 1.0e-14
+nend           = 10000000
+
+irenorm        = 1
+
+###########################
+#                         #
+#     MESH PARAMETERS     #
+#                         #
+###########################
+geometry = "cartesian"
+
+# Domain size:
+xmin                               = -11.0e-04
+xmax                               = 11.0e-04
+ymin                               = -11.0e-04 
+ymax                               = 11.0e-04
+
+sim_initGeom          = "fromtxt"
+sim_inputFilenameRoot = "input/Jet_test"
+
+
+# Total number of blocks:
+nblockx                            = 16
+nblocky                            = 16
+
+lrefine_max = 4
+lrefine_min = 1
+refine_var_1 = "dens"
+refine_var_2 = "tele"
+
+# Advanced Parameters
+hy_eosModeAfter                    = "dens_ie_gather" 
+hy_3TMode                          = "ragelike" 
+
+dr_usePosdefComputeDt              = .true.
+dr_posdefVar_1                     = "eion"  
+dr_posdefVar_2                     = "eele" 
+dr_posdefVar_3                     = "tele" 
+dr_posdefVar_4                     = "tion" 

@@ -1,0 +1,39 @@
+#!/bin/sh
+
+echo "Step 1/4: load modules" 
+currentDir=$PWD
+currentSim=${PWD##*/}
+source ~/startup_FLASH48.sh
+###source ../../../../flash.profile
+set     modulename    [ module-info name ]
+
+echo "---------------------------------"
+echo "Step 2/4: build"
+cd ../../../..
+rm -rf object
+./setup $currentSim -auto -2d +cartesian -maxblocks=8000 -nxb=16 -nyb=16 +hdf5typeio species=cham,targ +mtmmmt +uhd3t +mgd mgd_meshgroups=1
+
+###./setup  $currentSim -auto -parfile=example.par
+
+echo "---------------------------------"
+echo "Step 3/4: compile" 
+cd ./object
+make -j
+cd $currentDir
+
+
+echo "---------------------------------"
+echo "Step 4/4: run" 
+mkdir /bigdata/hplsim/scratch/hirsch95/Implement_PIC_txt_clean
+cp * /bigdata/hplsim/scratch/hirsch95/Implement_PIC_txt_clean
+cp -r input /bigdata/hplsim/scratch/hirsch95/Implement_PIC_txt_clean
+cp ../../../../object/flash4 /bigdata/hplsim/scratch/hirsch95/Implement_PIC_txt_clean
+cp ../../../../object/flash.par /bigdata/hplsim/scratch/hirsch95/Implement_PIC_txt_clean
+cd /bigdata/hplsim/scratch/hirsch95/Implement_PIC_txt_clean
+
+
+echo "submitting job"
+sbatch submit_slurm.sh
+
+echo "---------------------------------"
+echo "Job was submitted to queue" 

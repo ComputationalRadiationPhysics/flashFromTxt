@@ -1,0 +1,148 @@
+# Coniguration file for LaserSlab simulation
+REQUIRES Driver
+REQUIRES physics/Hydro
+
+USESETUPVARS ThreeT
+
+IF ThreeT
+   REQUESTS physics/Diffuse/DiffuseMain/Unsplit
+
+   REQUESTS physics/sourceTerms/Heatexchange/HeatexchangeMain/Spitzer
+   REQUESTS physics/materialProperties/Conductivity/ConductivityMain/SpitzerHighZ
+ENDIF
+
+USESETUPVARS withParticles
+
+# IF withParticles
+#    PARTICLETYPE passive INITMETHOD lattice MAPMETHOD quadratic ADVMETHOD rungekutta
+#    REQUIRES Particles/ParticlesMain
+#    REQUESTS Particles/ParticlesMapping/Quadratic
+#    REQUESTS Particles/ParticlesInitialization/Lattice
+#    REQUESTS IO/IOMain/
+#    REQUESTS IO/IOParticles
+# ENDIF
+
+# This simulation requires specifying the species via the setup
+# line. You must include the species setup variable:
+#
+# species=cham,targ
+#
+# An example of a setup line for this simulation is:
+#
+# ./setup -auto LaserSlab -2d +hdf5typeio \
+#         -nxb=16 -nyb=16 +mtmmmt +laser species=cham,targ
+# 
+
+DATAFILES matr_03332_copper.ses
+DATAFILES matr_03333_copper.ses
+DATAFILES matr_03334_copper.ses
+DATAFILES H_long.cn4
+DATAFILES input/Jet_PIC_test_implement_flash_dens.txt
+DATAFILES input/Jet_PIC_test_implement_flash_tion.txt
+DATAFILES input/Jet_PIC_test_implement_flash_tele.txt
+DATAFILES input/Jet_PIC_test_implement_flash_xfile.txt
+DATAFILES input/Jet_PIC_test_implement_flash_yfile.txt
+
+##########################
+#                        #
+#   RUNTIME PARAMETERS   #
+#                        #
+##########################
+
+VARIABLE BDRY
+
+D sim_initGeom Use a spherical target if sphere, default to slab
+PARAMETER sim_initGeom STRING "fromtxt" ["slab","circle2dpolar","fromtxt"]
+
+D sim_inputFilenameRoot Input file to call
+PARAMETER sim_inputFilenameRoot STRING "input/Jet_test"
+                              
+D sim_targetRadius The radius to use for the target
+PARAMETER sim_targetRadius REAL 10.0e-04
+
+# Target material defaults set for aluminum at room temperature:
+D sim_rhoTarg Initial target density
+PARAMETER sim_rhoTarg   REAL 8.935
+
+D sim_teleTarg Initial target electron temperature
+PARAMETER sim_teleTarg  REAL 290.11375
+
+D sim_tionTarg Initial target ion temperature
+PARAMETER sim_tionTarg  REAL 290.11375
+
+D sim_tradTarg Initial target radiation temperature
+PARAMETER sim_tradTarg  REAL 290.11375
+
+D sim_zminTarg target minimum zbar allowed
+PARAMETER sim_zminTarg  REAL 0.0
+
+D sim_eosTarg target EOS type
+PARAMETER sim_eosTarg   STRING "eos_tab" ["eos_tab","eos_gam"]
+
+# Chamber material defaults set for Helium at pressure 1.6 mbar:
+D sim_rhoCham Initial chamber density
+PARAMETER sim_rhoCham   REAL 1.0e-05
+
+D sim_teleCham Initial chamber electron temperature
+PARAMETER sim_teleCham  REAL 290.11375
+
+D sim_tionCham Initial chamber ion temperature
+PARAMETER sim_tionCham  REAL 290.11375
+
+D sim_tradCham Initial chamber radiation temperature
+PARAMETER sim_tradCham  REAL 290.11375
+
+D sim_eosCham chamber EOS type
+PARAMETER sim_eosCham   STRING "eos_tab" ["eos_tab","eos_gam"]
+
+D sim_heatDepth Initial Heated layer depth
+PARAMETER sim_heatDepth  REAL 1.0e-04
+
+D sim_heatRadius Initial Heated layer radius
+PARAMETER sim_heatRadius  REAL 15.0e-04
+
+D sim_heatTemp Initial Heated layer temperature
+PARAMETER sim_heatTemp  REAL 290.11375
+
+# Additional directives for demoing Thomson Scattering diagnostics follow.
+# To enable, add something like ThscDemo=True to to setup command line.
+
+D lase_variable saves (density of) the irradiated energy from EnergyDeposition unit, cf. RP ed_irradVarName
+VARIABLE lase TYPE: PER_VOLUME
+
+USESETUPVARS ThscDemo
+IF ThscDemo
+
+   REQUIRES diagnostics/ThomsonScattering
+
+#  No *essential* VARIABLE declarations follow, these are for Thomson Scattering tracing.
+
+   D pwin_variable for debugging: density of Power In from Thomson probe laser, used for power measurement and renorming
+   D pwia_variable for debugging: density of Power In, except where forbidden by critical density
+   D pwi1_variable for debugging: density of Power In, attenuated by close-to-critical energy loss. Expensive computation.
+   D pwi2_variable for debugging: density of Power In, attenuated by close-to-critical energy loss along both legs
+   D pwde_variable for debugging: density of Power of light from the Thomson scattering region that gets detected
+   D pwd1_variable for debugging: density of Power of light from the Thomson scattering region that gets detected, attenuated
+   D pwd2_variable for debugging: density of Power of light from the Thomson scattering region that gets detected, (2 legs) attenuated
+
+   VARIABLE pwin
+   VARIABLE pwia
+#   VARIABLE pwi1    # Uncommenting this makes ThomsonScattering MUCH slower!
+   VARIABLE pwde
+#   VARIABLE pwda
+   VARIABLE pwd1
+   VARIABLE pwi2
+   VARIABLE pwd2
+
+ENDIF
+
+# USESETUPVARS AddtlVelVars
+# IF AddtlVelVars
+#    LINKIF Grid_computeUserVars.F90  Grid
+#    D vlcx_variable velocity componenent in the X-direction of sim_confGeometry
+#    D vlcy_variable velocity componenent in the Y-direction of sim_confGeometry
+#    D vlcz_variable velocity componenent in the Z-direction of sim_confGeometry
+#    VARIABLE vlcx  TYPE: PER_MASS
+#    VARIABLE vlcy  TYPE: PER_MASS
+#    VARIABLE vlcz  TYPE: PER_MASS
+# ENDIF
