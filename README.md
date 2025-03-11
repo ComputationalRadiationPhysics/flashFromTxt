@@ -12,7 +12,7 @@ To begin, the following dependencies are required:
 - argparse, os, numpy, scipy, yt
 - openPMD-api
 
-#### Running the conversion:
+## Running the conversion:
 
 - go to the wished folder 
 
