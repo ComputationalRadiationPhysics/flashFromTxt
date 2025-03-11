@@ -29,7 +29,7 @@ module readTxtData
   use Simulation_data
   implicit none
   private
-  public :: read_txt_grid, read_txt_mesh, interpolate_txt_to_grid, init_geom_from_txt, cubic_interpolate_clamped
+  public :: read_txt_grid, read_txt_mesh, linear_interpolate_clamped, init_geom_from_txt, cubic_interpolate_clamped
 
 contains
 
@@ -214,7 +214,7 @@ subroutine cubic_interpolate_clamped(x_grid, y_grid, data, x_file, y_file, file_
 end subroutine cubic_interpolate_clamped
 
 
-subroutine interpolate_txt_to_grid(x_grid, y_grid, data, x_file, y_file, file_data, default_value)
+subroutine linear_interpolate_clamped(x_grid, y_grid, data, x_file, y_file, file_data, default_value)
   implicit none
 
   ! Inputs
@@ -284,7 +284,7 @@ subroutine interpolate_txt_to_grid(x_grid, y_grid, data, x_file, y_file, file_da
 
   ! Deallocate clamped data
   deallocate(clamped_file_data)
-end subroutine interpolate_txt_to_grid
+end subroutine linear_interpolate_clamped
 
 
 
@@ -433,25 +433,27 @@ subroutine Simulation_initBlock(blockId)
      !print *, "Debug: tele_array dimensions:", size(tele_array, 1), size(tele_array, 2)
      !print *, "Debug: tion_array dimensions:", size(tion_array, 1), size(tion_array, 2)
      !print *, "Debug: trad_array dimensions:", size(trad_array, 1), size(trad_array, 2)
+     
+     ! Debug Suggestion 4: Check allocations before accessing arrays
+     if (.not. allocated(rho_array)) then
+       print *, "Error: rho_array not allocated"
+       call Driver_abortFlash("rho_array not allocated in Simulation_initBlock")
+     endif
+     if (.not. allocated(tele_array)) then
+       print *, "Error: tele_array not allocated"
+       call Driver_abortFlash("tele_array not allocated in Simulation_initBlock")
+     endif
+     if (.not. allocated(tion_array)) then
+       print *, "Error: tion_array not allocated"
+       call Driver_abortFlash("tion_array not allocated in Simulation_initBlock")
+     endif
+     if (.not. allocated(trad_array)) then
+       print *, "Error: trad_array not allocated"
+       call Driver_abortFlash("trad_array not allocated in Simulation_initBlock")
+     endif
   endif
 
-  ! Debug Suggestion 4: Check allocations before accessing arrays
-  if (.not. allocated(rho_array)) then
-    print *, "Error: rho_array not allocated"
-    call Driver_abortFlash("rho_array not allocated in Simulation_initBlock")
-  endif
-  if (.not. allocated(tele_array)) then
-    print *, "Error: tele_array not allocated"
-    call Driver_abortFlash("tele_array not allocated in Simulation_initBlock")
-  endif
-  if (.not. allocated(tion_array)) then
-    print *, "Error: tion_array not allocated"
-    call Driver_abortFlash("tion_array not allocated in Simulation_initBlock")
-  endif
-  if (.not. allocated(trad_array)) then
-    print *, "Error: trad_array not allocated"
-    call Driver_abortFlash("trad_array not allocated in Simulation_initBlock")
-  endif
+
 
   ! Loop over cells and set the initial state
   do k = blkLimits(LOW, KAXIS), blkLimits(HIGH, KAXIS)
@@ -477,18 +479,6 @@ subroutine Simulation_initBlock(blockId)
               end if
            else
               species = CHAM_SPEC
-              if (sim_initGeom == "slab") then
-                 if (xcent(i) <= sim_targetRadius .and. &
-                     xcent(i) >= -1.*sim_targetRadius) then
-                    species = TARG_SPEC
-                 end if
-              elseif(sim_initGeom == "circle2dpolar" .and. NDIM == 2) then
-                 if (sqrt(xcent(i)**2 + ycent(j)**2) <= sim_targetRadius) then
-                    species = TARG_SPEC
-                 end if
-              else
-                 call Driver_abortFlash("Simulation_initBlock: sim_initGeom unknown!")
-              end if
               if (species == TARG_SPEC) then
                  rho = sim_rhoTarg
                  tele = sim_teleTarg
