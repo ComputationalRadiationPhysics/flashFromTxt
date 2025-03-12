@@ -72,3 +72,7 @@ options:
   -min_dens MIN_DENS    Minimum density in g/cm³ for FLASH.  
   -density_conversion_factor DENSITY_CONVERSION_FACTOR  
                         Density conversion factor from 1/cm³ to g/cm³. Ion dependant  
+
+## Modfications to make yourself
+
+At the moment, the code only transpose the density, electric temperature, ion temperature an radiation temperature to the openpmd. If you are interested in other value you need to modify the functions to add them to the final output
