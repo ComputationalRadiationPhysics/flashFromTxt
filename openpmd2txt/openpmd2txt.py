@@ -79,8 +79,8 @@ def process_data(density, edensity, t_electron, t_ion, x, y, xcenter, ycenter, o
     
     with np.errstate(divide='ignore', invalid='ignore'):
         valid_both = (density != 0) & (edensity != 0)
-        tele = np.where(valid_both, (t_electron / edensity) * 2 / (3 * kb), min_temp)
-        tion = np.where(density != 0, (t_ion / density) * 2 / (3 * kb), min_temp)
+        tele = np.where(valid_both, max((t_electron / edensity) * 2 / (3 * kb), min_temp), min_temp)
+        tion = np.where(density != 0, max((t_ion / density) * 2 / (3 * kb), min_temp), min_temp)
     
     density = np.maximum(density * 1e-6 * density_conversion_factor, min_dens)
     
