@@ -3,7 +3,7 @@ Example case for FLASH with input density/tele/tion from txt files
 
 ## Setup
 
-Base case tested on FLASH 4.8 (Documentation[https://flash.rochester.edu/site/flashcode/user_support/flash4_ug_4p8.pdf])
+Base case tested on FLASH 4.8 ([Documentation](https://flash.rochester.edu/site/flashcode/user_support/flash4_ug_4p8.pdf))
 
 ## Changes to Simulation_initBlock.F90
 
