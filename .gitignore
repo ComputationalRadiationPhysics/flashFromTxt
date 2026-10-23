@@ -4,6 +4,9 @@ openpmd2txt/output/*
 !openpmd2txt/input/.gitkeep
 !openpmd2txt/output/.gitkeep
 
+# flash2openpmd output (written to ./output by default)
+flash2openpmd/output/
+
 # Example tables are committed gzipped; ignore the decompressed copies
 Test_case/input/*.txt
 
