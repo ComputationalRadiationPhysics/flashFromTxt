@@ -1,0 +1,46 @@
+#!/bin/bash
+
+echo "Step 1/4: load modules" 
+currentDir=$PWD
+currentSim=${PWD##*/}
+#run_dir="PS_SESAME7592_50JGauss"
+#run_dir="test_rosi"
+run_dir="/bigdata/hplsim/scratch/$USER/FLASH/Test_Case_parallel"
+echo $run_dir
+#source ~/.startup_FLASH_ROSI.sh
+source ~/FLASH_rome.sh
+###source ../../../../flash.profile
+
+echo "---------------------------------"
+echo "Step 2/4: build"
+cd ../../../..
+rm -rf object_parallel
+
+# maxblocks per rank: full tree is at most 21760 blocks = ~85 per rank on 256 ranks; 1000 leaves ample headroom (~1 GB/rank)
+./setup $currentSim -auto -objdir=object_parallel -2d +cartesian -maxblocks=16000 -nxb=16 -nyb=16 +hdf5typeio species=cham,targ +mtmmmt +uhd3t +mgd mgd_meshgroups=1
+
+###./setup  $currentSim -auto -parfile=example.par
+
+echo "---------------------------------"
+echo "Step 3/4: compile" 
+cd ./object_parallel
+make -j
+cd $currentDir
+
+
+echo "---------------------------------"
+echo "Step 4/4: run" 
+mkdir -p $run_dir
+mkdir -p $run_dir/input
+cp * $run_dir
+cp input/Collision_Laser_25fs_4P16_L_100nm_smooth* $run_dir/input
+cp ../../../../object_parallel/flash4 $run_dir
+cp ../../../../object_parallel/flash.par $run_dir
+#cp sbatch.sh run
+cd $run_dir
+
+echo "submitting job"
+sbatch submit_slurm_multinode.sh
+
+echo "---------------------------------"
+echo "Job was submitted to queue" 

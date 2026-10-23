@@ -1,0 +1,46 @@
+#!/bin/bash
+
+echo "Step 1/4: load modules" 
+currentDir=$PWD
+currentSim=${PWD##*/}
+#run_dir="PS_SESAME7592_50JGauss"
+#run_dir="test_rosi"
+run_dir="/bigdata/hplsim/scratch/$USER/FLASH/Test_Case"
+echo $run_dir
+#source ~/.startup_FLASH_ROSI.sh
+source ~/FLASH_rome.sh
+###source ../../../../flash.profile
+
+echo "---------------------------------"
+echo "Step 2/4: build"
+cd ../../../..
+rm -rf object_serial
+
+# maxblocks: with nblockx=nblocky=16 and lrefine_max=4 the full tree has at most 256*(1+4+16+64) = 21760 blocks
+./setup $currentSim -auto -objdir=object_serial -2d +cartesian -maxblocks=22000 -nxb=16 -nyb=16 +hdf5typeio species=cham,targ +mtmmmt +uhd3t +mgd mgd_meshgroups=1
+
+###./setup  $currentSim -auto -parfile=example.par
+
+echo "---------------------------------"
+echo "Step 3/4: compile" 
+cd ./object_serial
+make -j
+cd $currentDir
+
+
+echo "---------------------------------"
+echo "Step 4/4: run" 
+mkdir -p $run_dir
+mkdir -p $run_dir/input
+cp * $run_dir
+cp input/Collision_Laser_25fs_4P16_L_100nm_smooth* $run_dir/input
+cp ../../../../object_serial/flash4 $run_dir
+cp ../../../../object_serial/flash.par $run_dir
+#cp sbatch.sh run
+cd $run_dir
+
+echo "submitting job"
+sbatch submit_slurm_rosi.sh
+
+echo "---------------------------------"
+echo "Job was submitted to queue" 

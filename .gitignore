@@ -1,0 +1,20 @@
+# openpmd2txt working directories (keep the folders, not their content)
+openpmd2txt/input/*
+openpmd2txt/output/*
+!openpmd2txt/input/.gitkeep
+!openpmd2txt/output/.gitkeep
+
+# Example tables are committed gzipped; ignore the decompressed copies
+Test_case/input/*.txt
+
+# Python
+__pycache__/
+*.pyc
+
+# FLASH run products
+*.log
+*_hdf5_chk_*
+*_hdf5_plt_cnt_*
+flash4
+flash_*.out
+slurm-*.out
